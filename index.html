@@ -10,7 +10,7 @@
 <body>
 <div id="main-wrapper">
 <div id="sidebar">
-<div id="current_time">4:00am</div>
+<div id="current_time">5:00am</div>
 <div id="speed">
 <div class="togglebutton slow current" data-val="slow">Slow</div>
 <div class="togglebutton medium" data-val="medium">Medium</div>
@@ -35,24 +35,39 @@ var width = 780,
 var sched_objs = [],
 	curr_minute = 0;
 
+// var act_codes = [
+// 	{"index": "0", "short": "Sleeping"},
+// 	{"index": "1", "short": "Personal Care"},
+// 	{"index": "2", "short": "Eating & Drinking"},
+// 	{"index": "3", "short": "Education"},
+// 	{"index": "4", "short": "Work"},
+// 	{"index": "5", "short": "Housework"},
+// 	{"index": "6", "short": "Household Care"},
+// 	{"index": "7", "short": "Non-Household Care"},
+// 	{"index": "8", "short": "Shopping"},
+// 	{"index": "9", "short": "Pro. Care Services"},
+// 	{"index": "10", "short": "Leisure"},
+// 	{"index": "11", "short": "Sports"},
+// 	{"index": "12", "short": "Religion"},
+// 	{"index": "13", "short": "Volunteering"},
+// 	{"index": "14", "short": "Phone Calls"},
+// 	{"index": "15", "short": "Misc."},
+// 	{"index": "16", "short": "Shifting"},
+// ];
+
+
 var act_codes = [
-	{"index": "0", "short": "Sleeping"},
-	{"index": "1", "short": "Personal Care"},
-	{"index": "2", "short": "Eating & Drinking"},
-	{"index": "3", "short": "Education"},
-	{"index": "4", "short": "Work"},
-	{"index": "5", "short": "Housework"},
-	{"index": "6", "short": "Household Care"},
-	{"index": "7", "short": "Non-Household Care"},
-	{"index": "8", "short": "Shopping"},
-	{"index": "9", "short": "Pro. Care Services"},
-	{"index": "10", "short": "Leisure"},
-	{"index": "11", "short": "Sports"},
-	{"index": "12", "short": "Religion"},
-	{"index": "13", "short": "Volunteering"},
-	{"index": "14", "short": "Phone Calls"},
-	{"index": "15", "short": "Misc."},
-	{"index": "16", "short": "Shifting"},
+  {"index": "0", "short": "accounts.google.com"},
+  {"index": "1", "short": "cs.ibotta.com"},
+  {"index": "2", "short": "mail.google.com"},
+  {"index": "3", "short": "myaccount.google.com"},
+  {"index": "4", "short": "workforce.cloudfactory.com"},
+  {"index": "5", "short": "google.com"},
+  {"index": "6", "short": "google.com.np"},
+  {"index": "7", "short": "attend.cf"},
+  {"index": "8", "short": "channels.cloudfactory.com"},
+  {"index": "9", "short": "Pomodoro break"},
+  {"index": "10", "short": "Shifting"},
 ];
 
 
@@ -60,17 +75,13 @@ var speeds = { "slow": 1000, "medium": 200, "fast": 50 };
 
 
 var time_notes = [
-	{ "start_minute": 1, "stop_minute": 40, "note": "The simulation kicks in, based on data from the American Time Use Survey." },
-	{ "start_minute": 70, "stop_minute": 120, "note": "Most people are still sleeping this early in the morning, but some are already at work or preparing for the day." },
-	{ "start_minute": 180, "stop_minute": 300, "note": "It's wake up time for most. Time to start the day with morning rituals, breakfast and a wonderful commute." },
-	{ "start_minute": 360, "stop_minute": 440, "note": "The day is in full swing with work or housework. Stores and services are open so people can run errands, and they take various forms of transportation to get there." },
-	{ "start_minute": 480, "stop_minute": 540, "note": "Lunch hour. Many go eat, but there's still activity throughout. You see a small shift at the end of the hour." },
-	{ "start_minute": 660, "stop_minute": 720, "note": "Coffee break? Again, at the top of the hour, you see a shift in activity." },
-	{ "start_minute": 780, "stop_minute": 830, "note": "With the work day done, it's time to commute home and fix dinner or go out for a while." },
-	{ "start_minute": 870, "stop_minute": 890, "note": "Dinner time!" },
-	{ "start_minute": 930, "stop_minute": 1010, "note": "Dinner's done. Time for relaxation, TV, games, hobbies and socializing." },
-	{ "start_minute": 1080, "stop_minute": 1140, "note": "Winding down for the day. From leisure time, people shift to personal care and sleep." },
-	{ "start_minute": 1210, "stop_minute": 1300, "note": "Goodnight. More than 80% of people are asleep and it peaks at 96% around 3:00am." },
+	{ "start_minute": 1, "stop_minute": 240, "note": "Shift A" },
+	{ "start_minute": 250, "stop_minute": 480, "note": "Shift B" },
+	{ "start_minute": 490, "stop_minute": 720, "note": "Shift C" },
+	{ "start_minute": 730, "stop_minute": 960, "note": "Shift C" },
+	{ "start_minute": 970, "stop_minute": 1200, "note": "Shift D" },
+	{ "start_minute": 1210, "stop_minute": 1440, "note": "Shift E" },
+	{ "start_minute": 1450, "stop_minute": 1680, "note": "Shift F" },
 ];
 var notes_index = 0;
 
@@ -110,7 +121,6 @@ d3.tsv("data/days-simulated-v2.tsv", function(error, data) {
 				activities.push({'act': day_array[i-1], 'duration': +day_array[i]});
 			}
 		}
-		console.log(activities);
 		sched_objs.push(activities);
 	});
 
@@ -397,7 +407,7 @@ function readablePercent(n) {
 
 // Minutes to time of day. Data is minutes from 4am.
 function minutesToTime(m) {
-	var minutes = (m + 4*60) % 1440;
+	var minutes = (m + 5*60) % 1440;
 	var hh = Math.floor(minutes / 60);
 	var ampm;
 	if (hh > 12) {

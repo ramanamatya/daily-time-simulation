@@ -35,33 +35,12 @@ var width = 780,
 var sched_objs = [],
 	curr_minute = 0;
 
-// var act_codes = [
-// 	{"index": "0", "short": "Sleeping"},
-// 	{"index": "1", "short": "Personal Care"},
-// 	{"index": "2", "short": "Eating & Drinking"},
-// 	{"index": "3", "short": "Education"},
-// 	{"index": "4", "short": "Work"},
-// 	{"index": "5", "short": "Housework"},
-// 	{"index": "6", "short": "Household Care"},
-// 	{"index": "7", "short": "Non-Household Care"},
-// 	{"index": "8", "short": "Shopping"},
-// 	{"index": "9", "short": "Pro. Care Services"},
-// 	{"index": "10", "short": "Leisure"},
-// 	{"index": "11", "short": "Sports"},
-// 	{"index": "12", "short": "Religion"},
-// 	{"index": "13", "short": "Volunteering"},
-// 	{"index": "14", "short": "Phone Calls"},
-// 	{"index": "15", "short": "Misc."},
-// 	{"index": "16", "short": "Shifting"},
-// ];
-
-
 var act_codes = [
   {"index": "0", "short": "accounts.google.com"},
-  {"index": "1", "short": "cs.ibotta.com"},
+  {"index": "1", "short": "workforce.cloudfactory.com"},
   {"index": "2", "short": "mail.google.com"},
   {"index": "3", "short": "myaccount.google.com"},
-  {"index": "4", "short": "workforce.cloudfactory.com"},
+  {"index": "4", "short": "cs.ibotta.com"},
   {"index": "5", "short": "google.com"},
   {"index": "6", "short": "google.com.np"},
   {"index": "7", "short": "attend.cf"},
@@ -70,18 +49,15 @@ var act_codes = [
   {"index": "10", "short": "Shifting"},
 ];
 
-
 var speeds = { "slow": 1000, "medium": 200, "fast": 50 };
-
 
 var time_notes = [
 	{ "start_minute": 1, "stop_minute": 240, "note": "Shift A" },
 	{ "start_minute": 250, "stop_minute": 480, "note": "Shift B" },
 	{ "start_minute": 490, "stop_minute": 720, "note": "Shift C" },
-	{ "start_minute": 730, "stop_minute": 960, "note": "Shift C" },
-	{ "start_minute": 970, "stop_minute": 1200, "note": "Shift D" },
-	{ "start_minute": 1210, "stop_minute": 1440, "note": "Shift E" },
-	{ "start_minute": 1450, "stop_minute": 1680, "note": "Shift F" },
+	{ "start_minute": 730, "stop_minute": 960, "note": "Shift D" },
+	{ "start_minute": 970, "stop_minute": 1200, "note": "Shift E" },
+	{ "start_minute": 1210, "stop_minute": 1440, "note": "Shift F" },
 ];
 var notes_index = 0;
 
@@ -125,7 +101,7 @@ d3.tsv("data/days-simulated-v2.tsv", function(error, data) {
 	});
 
 	// Used for percentages by minute
-	var act_counts = { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 0, "15": 0, "16": 0 };
+	var act_counts = { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0 };
 
 	// A node for each person's schedule
 	var nodes = sched_objs.map(function(o,i) {

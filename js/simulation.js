@@ -1,15 +1,16 @@
-var USER_SPEED = "slow";
+let USER_SPEED = "slow";
 
-var width = 780,
-  height = 800,
-  padding = 1,
-  maxRadius = 3;
+const width = 780;
+const height = 800;
+const padding = 1;
+const maxRadius = 3;
+
 // color = d3.scale.category10();
+const sched_objs = [];
 
-var sched_objs = [],
-  curr_minute = 0;
+let curr_minute = 0;
 
-var act_codes = [{
+const act_codes = [{
     "index": "0",
     "short": "accounts.google.com"
   },
@@ -55,13 +56,13 @@ var act_codes = [{
   },
 ];
 
-var speeds = {
+const speeds = {
   "slow": 1000,
   "medium": 200,
   "fast": 50
 };
 
-var time_notes = [{
+const time_notes = [{
     "start_minute": 1,
     "stop_minute": 240,
     "note": "Shift A"
@@ -92,45 +93,41 @@ var time_notes = [{
     "note": "Shift F"
   },
 ];
-var notes_index = 0;
-
+let notes_index = 0;
 
 // Activity to put in center of circle arrangement
-var center_act = "Shifting",
-  center_pt = {
-    "x": 380,
-    "y": 365
-  };
+const center_act = "Shifting";
 
+const center_pt = {
+  "x": 380,
+  "y": 365
+};
 
 // Coordinates for activities
-var foci = {};
-act_codes.forEach(function (code, i) {
-  if (code.short == center_act) {
-    foci[code.index] = center_pt;
+const foci = {};
+act_codes.forEach(({short, index}, i) => {
+  if (short == center_act) {
+    foci[index] = center_pt;
   } else {
-    var theta = 2 * Math.PI / (act_codes.length - 1);
-    foci[code.index] = {
+    const theta = 2 * Math.PI / (act_codes.length - 1);
+    foci[index] = {
       x: 250 * Math.cos(i * theta) + 380,
       y: 250 * Math.sin(i * theta) + 365
     };
   }
 });
 
-
 // Start the SVG
-var svg = d3.select("#chart").append("svg")
+const svg = d3.select("#chart").append("svg")
   .attr("width", width)
   .attr("height", height);
 
-
 // Load data and let's do it.
-d3.tsv("./js/data/days-simulated-v2.tsv", function (error, data) {
-
-  data.forEach(function (d) {
-    var day_array = d.day.split(",");
-    var activities = [];
-    for (var i = 0; i < day_array.length; i++) {
+d3.tsv("./js/data/days-simulated-v2.tsv", (error, data) => {
+  data.forEach(({day}) => {
+    const day_array = day.split(",");
+    const activities = [];
+    for (let i = 0; i < day_array.length; i++) {
       // Duration
       if (i % 2 == 1) {
         activities.push({
@@ -143,7 +140,7 @@ d3.tsv("./js/data/days-simulated-v2.tsv", function (error, data) {
   });
 
   // Used for percentages by minute
-  var act_counts = {
+  const act_counts = {
     "0": 0,
     "1": 0,
     "2": 0,
@@ -158,13 +155,13 @@ d3.tsv("./js/data/days-simulated-v2.tsv", function (error, data) {
   };
 
   // A node for each person's schedule
-  var nodes = sched_objs.map(function (o, i) {
-    var act = o[0].act;
+  const nodes = sched_objs.map((o, i) => {
+    const act = o[0].act;
     act_counts[act] += 1;
-    var init_x = foci[act].x + Math.random();
-    var init_y = foci[act].y + Math.random();
+    const init_x = foci[act].x + Math.random();
+    const init_y = foci[act].y + Math.random();
     return {
-      act: act,
+      act,
       radius: 3,
       x: init_x,
       y: init_y,
@@ -172,10 +169,10 @@ d3.tsv("./js/data/days-simulated-v2.tsv", function (error, data) {
       moves: 0,
       next_move_time: o[0].duration,
       sched: o,
-    }
+    };
   });
 
-  var force = d3.layout.force()
+  const force = d3.layout.force()
     .nodes(nodes)
     .size([width, height])
     // .links([])
@@ -185,39 +182,33 @@ d3.tsv("./js/data/days-simulated-v2.tsv", function (error, data) {
     .on("tick", tick)
     .start();
 
-  var circle = svg.selectAll("circle")
+  const circle = svg.selectAll("circle")
     .data(nodes)
     .enter().append("circle")
-    .attr("r", function (d) {
-      return d.radius;
-    })
-    .style("fill", function (d) {
-      return d.color;
-    });
+    .attr("r", ({radius}) => radius)
+    .style("fill", d => d.color);
   // .call(force.drag);
 
   // Activity labels
-  var label = svg.selectAll("text")
+  const label = svg.selectAll("text")
     .data(act_codes)
     .enter().append("text")
     .attr("class", "actlabel")
-    .attr("x", function (d, i) {
-      if (d.short == center_act) {
+    .attr("x", ({short}, i) => {
+      if (short == center_act) {
         return center_pt.x;
       } else {
-        var theta = 2 * Math.PI / (act_codes.length - 1);
+        const theta = 2 * Math.PI / (act_codes.length - 1);
         return 340 * Math.cos(i * theta) + 380;
       }
-
     })
-    .attr("y", function (d, i) {
-      if (d.short == center_act) {
+    .attr("y", ({short}, i) => {
+      if (short == center_act) {
         return center_pt.y;
       } else {
-        var theta = 2 * Math.PI / (act_codes.length - 1);
+        const theta = 2 * Math.PI / (act_codes.length - 1);
         return 340 * Math.sin(i * theta) + 365;
       }
-
     });
 
   label.append("tspan")
@@ -226,9 +217,7 @@ d3.tsv("./js/data/days-simulated-v2.tsv", function (error, data) {
     })
     // .attr("dy", "1.3em")
     .attr("text-anchor", "middle")
-    .text(function (d) {
-      return d.short;
-    });
+    .text(({short}) => short);
   label.append("tspan")
     .attr("dy", "1.3em")
     .attr("x", function () {
@@ -236,16 +225,13 @@ d3.tsv("./js/data/days-simulated-v2.tsv", function (error, data) {
     })
     .attr("text-anchor", "middle")
     .attr("class", "actpct")
-    .text(function (d) {
-      return act_counts[d.index] + "%";
-    });
-
+    .text(({index}) => `${act_counts[index]}%`);
 
   // Update nodes based on activity and duration
   function timer() {
-    d3.range(nodes.length).map(function (i) {
-      var curr_node = nodes[i],
-        curr_moves = curr_node.moves;
+    d3.range(nodes.length).map(i => {
+      const curr_node = nodes[i];
+      let curr_moves = curr_node.moves;
 
       // Time to go to next activity
       if (curr_node.next_move_time == curr_minute) {
@@ -270,7 +256,6 @@ d3.tsv("./js/data/days-simulated-v2.tsv", function (error, data) {
 
         nodes[i].next_move_time += nodes[i].sched[curr_node.moves].duration;
       }
-
     });
 
     force.resume();
@@ -278,12 +263,10 @@ d3.tsv("./js/data/days-simulated-v2.tsv", function (error, data) {
 
     // Update percentages
     label.selectAll("tspan.actpct")
-      .text(function (d) {
-        return readablePercent(act_counts[d.index]);
-      });
+      .text(({index}) => readablePercent(act_counts[index]));
 
     // Update time
-    var true_minute = curr_minute % 1440;
+    const true_minute = curr_minute % 1440;
     d3.select("#current_time").text(minutesToTime(true_minute));
 
     // Update notes
@@ -312,20 +295,16 @@ d3.tsv("./js/data/days-simulated-v2.tsv", function (error, data) {
       }
     }
 
-
     setTimeout(timer, speeds[USER_SPEED]);
   }
   setTimeout(timer, speeds[USER_SPEED]);
 
-
-
-
-  function tick(e) {
-    var k = 0.04 * e.alpha;
+  function tick({alpha}) {
+    const k = 0.04 * alpha;
 
     // Push nodes toward their designated focus.
-    nodes.forEach(function (o, i) {
-      var curr_act = o.act;
+    nodes.forEach((o, i) => {
+      const curr_act = o.act;
 
       // Make sleep more sluggish moving.
       if (curr_act == "0") {
@@ -340,48 +319,38 @@ d3.tsv("./js/data/days-simulated-v2.tsv", function (error, data) {
 
     circle
       .each(collide(.5))
-      .style("fill", function (d) {
-        return d.color;
-      })
-      .attr("cx", function (d) {
-        return d.x;
-      })
-      .attr("cy", function (d) {
-        return d.y;
-      });
+      .style("fill", d => d.color)
+      .attr("cx", ({x}) => x)
+      .attr("cy", ({y}) => y);
   }
-
 
   // Resolve collisions between nodes.
   function collide(alpha) {
-    var quadtree = d3.geom.quadtree(nodes);
-    return function (d) {
-      var r = d.radius + maxRadius + padding,
-        nx1 = d.x - r,
-        nx2 = d.x + r,
-        ny1 = d.y - r,
-        ny2 = d.y + r;
-      quadtree.visit(function (quad, x1, y1, x2, y2) {
-        if (quad.point && (quad.point !== d)) {
-          var x = d.x - quad.point.x,
-            y = d.y - quad.point.y,
-            l = Math.sqrt(x * x + y * y),
-            r = d.radius + quad.point.radius + (d.act !== quad.point.act) * padding;
+    const quadtree = d3.geom.quadtree(nodes);
+    return d => {
+      const r = d.radius + maxRadius + padding;
+      const nx1 = d.x - r;
+      const nx2 = d.x + r;
+      const ny1 = d.y - r;
+      const ny2 = d.y + r;
+      quadtree.visit(({point}, x1, y1, x2, y2) => {
+        if (point && (point !== d)) {
+          let x = d.x - point.x;
+          let y = d.y - point.y;
+          let l = Math.sqrt(x * x + y * y);
+          const r = d.radius + point.radius + (d.act !== point.act) * padding;
           if (l < r) {
             l = (l - r) / l * alpha;
             d.x -= x *= l;
             d.y -= y *= l;
-            quad.point.x += x;
-            quad.point.y += y;
+            point.x += x;
+            point.y += y;
           }
         }
         return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
       });
     };
   }
-
-
-
 
   // Speed toggle
   d3.selectAll(".togglebutton")
@@ -404,11 +373,9 @@ d3.tsv("./js/data/days-simulated-v2.tsv", function (error, data) {
     });
 }); // @end d3.tsv
 
-
-
 function color(activity) {
 
-  var colorByActivity = {
+  const colorByActivity = {
     "0": "#e0d400",
     "1": "#1c8af9",
     "2": "#51BC05",
@@ -426,33 +393,27 @@ function color(activity) {
     "14": "#cc87fa",
     "15": "#ee8e76",
     "16": "#bbbbbb",
-  }
-
+  };
   return colorByActivity[activity];
-
 }
-
-
 
 // Output readable percent based on count.
 function readablePercent(n) {
 
-  var pct = 100 * n / 1000;
+  let pct = 100 * n / 1000;
   if (pct < 1 && pct > 0) {
     pct = "<1%";
   } else {
-    pct = Math.round(pct) + "%";
+    pct = `${Math.round(pct)}%`;
   }
-
   return pct;
 }
 
-
 // Minutes to time of day. Data is minutes from 4am.
 function minutesToTime(m) {
-  var minutes = (m + 5 * 60) % 1440;
-  var hh = Math.floor(minutes / 60);
-  var ampm;
+  const minutes = (m + 5 * 60) % 1440;
+  let hh = Math.floor(minutes / 60);
+  let ampm;
   if (hh > 12) {
     hh = hh - 12;
     ampm = "pm";
@@ -464,10 +425,9 @@ function minutesToTime(m) {
   } else {
     ampm = "am";
   }
-  var mm = minutes % 60;
+  let mm = minutes % 60;
   if (mm < 10) {
-    mm = "0" + mm;
+    mm = `0${mm}`;
   }
-
-  return hh + ":" + mm + ampm
+  return `${hh}:${mm}${ampm}`;
 }
